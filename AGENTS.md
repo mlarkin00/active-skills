@@ -2,7 +2,7 @@
 
 ## Project Goal
 
-Source of truth for a curated set of agent skills, consumed directly by Claude Code and Antigravity. Marketplaces reference this repository; nothing here is a vendored copy of anything else, and no environment needs to clone it or remember to pull.
+Source of truth for a curated set of agent skills, consumed by Claude Code and Antigravity. This is the **authoring** repo — clone it to edit skills. The `mlarkin00/claude` marketplace mirrors it via CI, so users install from that single place (Claude marketplace, or `agy plugin install` of that repo) and never clone this one.
 
 ## Project Context
 
@@ -37,7 +37,7 @@ python3 -c "import json;[json.load(open(f)) and print('OK',f) for f in ['.claude
 
 - Each skill MUST live in `skills/<skill-name>/` with a `SKILL.md`, and `skills/` MUST contain **nothing but skill directories**. Antigravity installs every entry there as a skill, so a loose file becomes a phantom skill — this is why `EVAL.txtpb` lives in `evals/`. `agy plugin validate .` reports the count, so a jump of one is the symptom.
 - Run `gen-readme.sh` after any skill change. The block between `<!-- SKILLS:START -->` and `<!-- SKILLS:END -->` is generated and MUST NOT be hand-edited.
-- Bump the manifest a change actually affects. A skill edit affects both runtimes.
+- **Bump the `version` in both manifests to ship.** Plugin caches are version-keyed; the mirror carries the change, but without a version bump no cache refetches it. The sync workflow warns when content changed but the version did not.
 
 ## Architecture & Constraints
 

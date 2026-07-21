@@ -1,7 +1,7 @@
 {
   "name": "active-skills",
   "version": "0.2.1",
-  "description": "A curated set of agent skills, plus per-skill usage tracking. Marketplaces reference this repository directly, so there is no vendored copy to drift.",
+  "description": "A curated set of agent skills for Claude Code and Antigravity.",
   "author": {
     "name": "Matt Larkin",
     "email": "mlarkin00@gmail.com"
@@ -11,7 +11,6 @@
   "keywords": [
     "skills",
     "agent-skills",
-    "active-skills",
-    "usage-tracking"
+    "active-skills"
   ]
 }

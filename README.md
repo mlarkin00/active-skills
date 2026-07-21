@@ -1,6 +1,6 @@
 # active-skills
 
-A curated set of agent skills, installable as a plugin in both Claude Code and Antigravity. This repository is the source of truth — marketplaces reference it directly rather than vendoring a copy, so there is no mirror to drift and no clone to keep up to date by hand.
+A curated set of agent skills, installable as a plugin in both Claude Code and Antigravity. **This repository is the source of truth — clone it to author skills.** The [`mlarkin00/claude`](https://github.com/mlarkin00/claude) marketplace mirrors it automatically, so users install everything from that one place and never clone this repo.
 
 The repository root *is* the plugin. Claude Code reads `.claude-plugin/plugin.json`; Antigravity reads `plugin.json`. The two manifests coexist and each carries its own version, so one directory serves both runtimes.
 
@@ -33,7 +33,7 @@ After adding, removing, or retitling a skill, regenerate the inventory below:
 bash scripts/gen-readme.sh
 ```
 
-Pushing to `main` is all that is needed to publish — both runtimes resolve this repository directly.
+To publish: **bump the `version` in `plugin.json` and `.claude-plugin/plugin.json`, then push to `main`.** A sync workflow in `mlarkin00/claude` mirrors the change into the marketplace and updates its `marketplace.json` to the new version. The bump is what matters — plugin caches are version-keyed, so a skill change shipped without a version bump will not reach anyone. The sync surfaces a warning when content changes without a bump.
 
 ## Layout
 
