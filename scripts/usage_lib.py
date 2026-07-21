@@ -51,11 +51,23 @@ def counts_path() -> str:
 
 
 def plugin_skills_dir() -> str | None:
+    """Locate this plugin's own skills/ directory.
+
+    Claude Code exports CLAUDE_PLUGIN_ROOT. Antigravity exports no equivalent,
+    but copies the whole plugin and runs hooks from its root, so resolving
+    relative to this file works there. This file lives in <plugin>/scripts/,
+    so <plugin>/skills/ is one level up either way.
+    """
     root = os.environ.get("CLAUDE_PLUGIN_ROOT", "").strip()
-    if not root:
-        return None
-    skills = os.path.join(root, "skills")
-    return skills if os.path.isdir(skills) else None
+    candidates = []
+    if root:
+        candidates.append(os.path.join(root, "skills"))
+    here = os.path.dirname(os.path.abspath(__file__))
+    candidates.append(os.path.join(os.path.dirname(here), "skills"))
+    for skills in candidates:
+        if os.path.isdir(skills):
+            return skills
+    return None
 
 
 def normalize(name: str) -> str:

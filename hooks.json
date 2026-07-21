@@ -1,0 +1,28 @@
+{
+  "active-skills-usage": {
+    "enabled": true,
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./scripts/track-usage-agy.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./scripts/sync-usage.py",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}

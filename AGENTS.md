@@ -8,10 +8,12 @@ Source of truth for a curated set of agent skills and their usage tracking, cons
 
 The repository root **is** the plugin. Two manifests coexist because the runtimes read different paths:
 
-| Runtime | Manifest | Version |
-|---|---|---|
-| Claude Code | `.claude-plugin/plugin.json` | `0.2.1` |
-| Antigravity | `plugin.json` | `0.1.11` |
+| Runtime | Manifest | Hooks | Version |
+|---|---|---|---|
+| Claude Code | `.claude-plugin/plugin.json` | `hooks/hooks.json` | `0.2.1` |
+| Antigravity | `plugin.json` | `hooks.json` | `0.1.11` |
+
+Claude nests, Antigravity does not — so both runtimes' files coexist and each is invisible to the other. Verified: `agy plugin validate` reports `hooks: skipped (not found)` when only `hooks/hooks.json` is present.
 
 Versions are deliberately independent — a Claude-only hook fix must not force an empty Antigravity release. Each runtime ignores the other's files.
 
@@ -36,8 +38,9 @@ CLAUDE_PLUGIN_ROOT=$PWD ACTIVE_SKILLS_USAGE_REPO=/tmp/t \
 
 ## Style & Conventions
 
-- Each skill MUST live in `skills/<skill-name>/` with a `SKILL.md`. Skill membership is a **directory** test, so a loose file under `skills/` is never counted as a skill.
-- Keep `scripts/usage_lib.py` runtime-neutral. Anything that parses a Claude Code hook payload belongs in `track-usage.py` / `sync-usage.py`, so a second runtime can reuse the core without a fork.
+- Each skill MUST live in `skills/<skill-name>/` with a `SKILL.md`, and `skills/` MUST contain **nothing but skill directories**. Antigravity installs every entry there as a skill — a loose file becomes a phantom skill in its UI. The eval suite lives in `evals/` for exactly this reason.
+- Keep `scripts/usage_lib.py` and `scripts/sync-usage.py` runtime-neutral. Payload parsing belongs in the per-runtime adapters — `track-usage.py` (Claude) and `track-usage-agy.py` (Antigravity) — so neither runtime forks the core.
+- Membership MUST stay a directory test against this plugin's own `skills/`. Never introduce a hand-maintained list of skill names; it would have to be updated on every skill change and would drift silently.
 - Bump the manifest a change actually affects. A skill edit affects both; a `hooks/` edit affects only Claude.
 - Run `gen-readme.sh` after any skill change — the block between `<!-- SKILLS:START -->` and `<!-- SKILLS:END -->` is generated and MUST NOT be hand-edited.
 

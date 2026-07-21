@@ -21,16 +21,30 @@ Skills are then namespaced under the plugin, e.g. `active-skills:systematic-debu
 |---|---|---|
 | `skills/` | both | The skills themselves. Runtime-neutral. |
 | `scripts/usage_lib.py` | both | Usage-counting core — resolution, locking, atomic writes. No runtime specifics. |
-| `scripts/track-usage.py`, `sync-usage.py` | Claude | Hook adapters that parse Claude Code payloads and call the core. |
-| `hooks/hooks.json` | Claude | Registers the tracking hooks. |
+| `scripts/sync-usage.py` | both | Commits and pushes the counts. Runtime-neutral. |
+| `scripts/track-usage.py` | Claude | Reads a Claude `Skill` tool payload. |
+| `hooks/hooks.json` | Claude | Registers the Claude hooks. |
+| `scripts/track-usage-agy.py` | Antigravity | Detects a skill read in an Antigravity payload. |
+| `hooks.json` | Antigravity | Registers the Antigravity hooks. |
 | `sidecars/` | Antigravity | Scheduled update check. |
 | `scripts/gen-readme.sh` | — | Regenerates the skill inventory below. |
+| `evals/` | — | Eval suite. Deliberately outside `skills/`, which must contain only skill directories. |
 
-Each runtime ignores the other's files.
+Each runtime ignores the other's files — Claude reads `hooks/hooks.json`, Antigravity reads `hooks.json`, and neither sees the other.
 
 ## Usage tracking
 
-A `PostToolUse` hook increments a per-skill counter on every `Skill` call; a `SessionEnd` hook commits and pushes the result once per session, so history gets one commit per session rather than one per invocation. Only skills shipped by this plugin are counted, and `active-skills:gcloud` and `gcloud` share a single counter.
+A `PostToolUse` hook increments a per-skill counter; a second hook commits and pushes the result at the end of the run, so history gets one commit per session rather than one per invocation. Only skills shipped by this plugin are counted, and `active-skills:gcloud` and `gcloud` share a single counter.
+
+The two runtimes detect a skill use differently, because they dispatch skills differently:
+
+| | Claude Code | Antigravity |
+|---|---|---|
+| Skill use looks like | a `Skill` tool call | a file read of `skills/<name>/SKILL.md` — there is no skill-activation tool |
+| Detected from | `tool_input.skill` | `toolCall.args` path, falling back to the transcript |
+| Flush hook | `SessionEnd` | `Stop` |
+
+Both resolve membership the same way — a directory test against this plugin's own `skills/` — so no list of skill names is maintained anywhere. Antigravity merges every plugin's skills into one shared directory, so this test is what keeps another plugin's skills from being counted here.
 
 Tracking is **opt-in**. Set `ACTIVE_SKILLS_USAGE_REPO` to a git work tree and counts are written to `skill-usage.json` at its root:
 
