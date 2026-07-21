@@ -12,17 +12,6 @@
           }
         ]
       }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 ./scripts/sync-usage.py",
-            "timeout": 20
-          }
-        ]
-      }
     ]
   }
 }

@@ -42,7 +42,7 @@ The two runtimes detect a skill use differently, because they dispatch skills di
 |---|---|---|
 | Skill use looks like | a `Skill` tool call | a file read of `skills/<name>/SKILL.md` — there is no skill-activation tool |
 | Detected from | `tool_input.skill` | `toolCall.args` path, falling back to the transcript |
-| Flush hook | `SessionEnd` | `Stop` |
+| Flush | `SessionEnd` hook | `sidecars/sync-usage` on a schedule |
 
 Both resolve membership the same way — a directory test against this plugin's own `skills/` — so no list of skill names is maintained anywhere. Antigravity merges every plugin's skills into one shared directory, so this test is what keeps another plugin's skills from being counted here.
 

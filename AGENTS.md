@@ -52,6 +52,10 @@ CLAUDE_PLUGIN_ROOT=$PWD ACTIVE_SKILLS_USAGE_REPO=/tmp/t \
 
 **Hooks MUST exit 0 on every path.** Malformed stdin, missing repo, non-git directory, failed push — a tracker that blocks a session is worse than one that misses a count.
 
+**Antigravity `hooks.json` MUST contain only `PostToolUse`.** Adding a `Stop` block silently stops `PostToolUse` from firing — the plugin still installs, `agy` still reports the hooks as processed, and nothing errors; counts simply never appear. Verified against `agy` 1.1.5: a separate named hook block does not avoid it. Only `PostToolUse` fires in `--print` mode at all; `PreInvocation`, `PostInvocation`, and `Stop` never fired in testing. This is why the Antigravity flush is a scheduled sidecar rather than a lifecycle hook.
+
+`PostToolUse` handlers MUST use the nested `{"matcher": ..., "hooks": [...]}` form. The flat `{"type": "command", ...}` form parses and installs but never fires — note that `agy-plugins/agent-memory` and `memory-bank` both use the flat form, so their hooks are likely dead.
+
 **Concurrency.** Counts are written under an exclusive `flock` with atomic tmp+rename, because parallel sessions increment the same file. Do not replace this with a plain read-modify-write.
 
 **Never:**
