@@ -1,70 +1,50 @@
 # active-skills
 
-A curated set of agent skills, plus per-skill usage tracking. This repository is the **source of truth** — marketplaces reference it directly rather than vendoring a copy, so there is no mirror to drift.
+A curated set of agent skills, installable as a plugin in both Claude Code and Antigravity. This repository is the source of truth — marketplaces reference it directly rather than vendoring a copy, so there is no mirror to drift and no clone to keep up to date by hand.
 
-The repository root *is* the plugin. Claude Code reads `.claude-plugin/plugin.json`; Antigravity reads `plugin.json`. The two manifests coexist, so one directory serves both runtimes and each carries its own version number.
+The repository root *is* the plugin. Claude Code reads `.claude-plugin/plugin.json`; Antigravity reads `plugin.json`. The two manifests coexist and each carries its own version, so one directory serves both runtimes.
+
+Everything here is skills or skill-authoring tooling. Usage tracking lives in a separate `skill-usage` plugin, deliberately: keeping plugin machinery out of this repo keeps it a clean place to write skills.
 
 ## Install
 
-**Claude Code** — the plugin is listed in the [`mlarkin00-claude`](https://github.com/mlarkin00/claude) marketplace:
+**Claude Code** — via the [`mlarkin00-claude`](https://github.com/mlarkin00/claude) marketplace:
 
 ```
 /plugin marketplace add mlarkin00/claude
 /plugin install active-skills@mlarkin00-claude
 ```
 
-Skills are then namespaced under the plugin, e.g. `active-skills:systematic-debugging`.
+Skills are namespaced under the plugin, e.g. `active-skills:systematic-debugging`.
+
+**Antigravity** — installs straight from the repository URL:
+
+```
+agy plugin install https://github.com/mlarkin00/active-skills
+```
+
+## Authoring
+
+Each skill is a directory under `skills/` containing a `SKILL.md`. That is the whole contract — `skills/` must contain **nothing but skill directories**, because Antigravity installs every entry there as a skill and a loose file becomes a phantom skill in its UI. The eval suite lives in `evals/` for that reason.
+
+After adding, removing, or retitling a skill, regenerate the inventory below:
+
+```bash
+bash scripts/gen-readme.sh
+```
+
+Pushing to `main` is all that is needed to publish — both runtimes resolve this repository directly.
 
 ## Layout
 
-| Path | Runtime | Purpose |
-|---|---|---|
-| `skills/` | both | The skills themselves. Runtime-neutral. |
-| `scripts/usage_lib.py` | both | Usage-counting core — resolution, locking, atomic writes. No runtime specifics. |
-| `scripts/sync-usage.py` | both | Commits and pushes the counts. Runtime-neutral. |
-| `scripts/track-usage.py` | Claude | Reads a Claude `Skill` tool payload. |
-| `hooks/hooks.json` | Claude | Registers the Claude hooks. |
-| `scripts/track-usage-agy.py` | Antigravity | Detects a skill read in an Antigravity payload. |
-| `hooks.json` | Antigravity | Registers the Antigravity hooks. |
-| `sidecars/` | Antigravity | Scheduled update check. |
-| `scripts/gen-readme.sh` | — | Regenerates the skill inventory below. |
-| `evals/` | — | Eval suite. Deliberately outside `skills/`, which must contain only skill directories. |
-
-Each runtime ignores the other's files — Claude reads `hooks/hooks.json`, Antigravity reads `hooks.json`, and neither sees the other.
-
-## Usage tracking
-
-A `PostToolUse` hook increments a per-skill counter; a second hook commits and pushes the result at the end of the run, so history gets one commit per session rather than one per invocation. Only skills shipped by this plugin are counted, and `active-skills:gcloud` and `gcloud` share a single counter.
-
-The two runtimes detect a skill use differently, because they dispatch skills differently:
-
-| | Claude Code | Antigravity |
-|---|---|---|
-| Skill use looks like | a `Skill` tool call | a file read of `skills/<name>/SKILL.md` — there is no skill-activation tool |
-| Detected from | `tool_input.skill` | `toolCall.args` path, falling back to the transcript |
-| Flush | `SessionEnd` hook | `sidecars/sync-usage` on a schedule |
-
-Both resolve membership the same way — a directory test against this plugin's own `skills/` — so no list of skill names is maintained anywhere. Antigravity merges every plugin's skills into one shared directory, so this test is what keeps another plugin's skills from being counted here.
-
-Tracking is **opt-in**. Set `ACTIVE_SKILLS_USAGE_REPO` to a git work tree and counts are written to `skill-usage.json` at its root:
-
-```json
-{
-  "systematic-debugging": { "count": 12, "last_used_at": "2026-07-21T19:49:08Z" }
-}
-```
-
-Set it in `~/.claude/settings.json`, which keeps a machine-specific path out of this repository:
-
-```json
-"env": { "ACTIVE_SKILLS_USAGE_REPO": "/path/to/a/private/repo" }
-```
-
-With the variable unset, counts fall back to `~/.claude/active-skills-usage.json` and no git command runs.
-
-**Usage counts are private and must never be committed here.** This repository is public; point the destination at a private repo. `skill-usage.json` is gitignored as a backstop.
-
-Both hooks exit 0 on every path — malformed input, a missing or non-git repo, a failed push. A failed push leaves the commit for the next session. The commit is scoped with `git commit --only` so unrelated staged work is untouched, and the sync skips a repo that is mid-merge or mid-rebase.
+| Path | Purpose |
+|---|---|
+| `skills/` | The skills. Only skill directories belong here. |
+| `evals/` | Eval suite, kept out of `skills/` on purpose. |
+| `scripts/gen-readme.sh` | Regenerates the inventory below. |
+| `sidecars/check-updates/` | Antigravity: periodic update check. |
+| `tests/` | Tests for the update-check sidecar. |
+| `.claude-plugin/plugin.json`, `plugin.json` | The two runtime manifests. |
 
 ## Skills
 
