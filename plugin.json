@@ -1,0 +1,17 @@
+{
+  "name": "active-skills",
+  "version": "0.1.11",
+  "description": "A curated set of agent skills, plus per-skill usage tracking. Marketplaces reference this repository directly, so there is no vendored copy to drift.",
+  "author": {
+    "name": "Matt Larkin",
+    "email": "mlarkin00@gmail.com"
+  },
+  "homepage": "https://github.com/mlarkin00/active-skills",
+  "repository": "https://github.com/mlarkin00/active-skills",
+  "keywords": [
+    "skills",
+    "agent-skills",
+    "active-skills",
+    "usage-tracking"
+  ]
+}
