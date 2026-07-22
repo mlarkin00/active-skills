@@ -1,11 +1,11 @@
 name: Notify marketplace
 
-# On any push to main, ping the mlarkin00/claude marketplace to re-mirror this
+# On any push to main, ping the mlarkin00/plugins marketplace to re-mirror this
 # repo immediately. The marketplace also polls daily, so this is a latency
 # optimization, not a hard dependency — if the token is absent the daily poll
 # still picks the change up.
 #
-# Setup: add a PAT with `repo` scope on mlarkin00/claude as the Actions secret
+# Setup: add a PAT with `repo` scope on mlarkin00/plugins as the Actions secret
 # MARKETPLACE_DISPATCH_TOKEN. Without it this job no-ops with a warning.
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
   dispatch:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping mlarkin00/claude to re-sync
+      - name: Ping mlarkin00/plugins to re-sync
         env:
           TOKEN: ${{ secrets.MARKETPLACE_DISPATCH_TOKEN }}
         run: |
@@ -30,7 +30,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${TOKEN}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/mlarkin00/claude/dispatches" \
+            "https://api.github.com/repos/mlarkin00/plugins/dispatches" \
             -d '{"event_type":"active-skills-updated"}')
           echo "dispatch HTTP $code"
           [ "$code" = "204" ]
