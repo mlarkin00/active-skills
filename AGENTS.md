@@ -15,6 +15,8 @@ Source of truth for a curated set of agent skills, consumed by Claude Code and A
 
 The split exists so this stays a clean place to author. Plugin machinery living here is what made it a poor one.
 
+Backlog for the skills themselves: `@.agents/TODO.md`. It does not sync — the mirror takes only top-level directories containing a `SKILL.md`, and `*/` does not match dot-directories.
+
 The only thing here that reaches the plugin repo is `.github/workflows/notify-marketplace.yml`, which POSTs a `repository_dispatch` (`active-skills-updated`) to `mlarkin00/plugins` on every push to `main`. It carries no content — it is a doorbell. The secret is `MARKETPLACE_DISPATCH_TOKEN`; without it the job no-ops with a warning and the marketplace's daily 06:17 UTC poll syncs instead.
 
 ## Operational Commands
