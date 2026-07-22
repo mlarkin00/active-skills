@@ -1,0 +1,50 @@
+{
+  "explanatory-mode": {
+    "count": 1,
+    "last_used_at": "2026-07-22T23:02:37Z"
+  },
+  "guidelines": {
+    "count": 1,
+    "last_used_at": "2026-07-21T21:58:49Z"
+  },
+  "managing-agent-instructions": {
+    "count": 2,
+    "last_used_at": "2026-07-22T22:51:09Z"
+  },
+  "memories-add": {
+    "count": 1,
+    "last_used_at": "2026-07-22T21:15:18Z"
+  },
+  "memories-curate": {
+    "count": 1,
+    "last_used_at": "2026-07-22T21:14:01Z"
+  },
+  "memories-delete": {
+    "count": 1,
+    "last_used_at": "2026-07-22T21:16:02Z"
+  },
+  "memories-list": {
+    "count": 4,
+    "last_used_at": "2026-07-22T21:06:17Z"
+  },
+  "prompt-design": {
+    "count": 1,
+    "last_used_at": "2026-07-21T19:50:25Z"
+  },
+  "stats": {
+    "count": 1,
+    "last_used_at": "2026-07-22T20:49:44Z"
+  },
+  "systematic-debugging": {
+    "count": 1,
+    "last_used_at": "2026-07-22T20:41:51Z"
+  },
+  "test-driven-development": {
+    "count": 1,
+    "last_used_at": "2026-07-22T23:17:10Z"
+  },
+  "verify-memory": {
+    "count": 6,
+    "last_used_at": "2026-07-22T21:05:44Z"
+  }
+}
