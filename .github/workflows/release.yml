@@ -1,0 +1,120 @@
+name: Release
+
+# Auto-bumps the manifest versions when release-relevant content changes, so
+# shipping a skill no longer depends on remembering to hand-bump. Plugin caches
+# are version-keyed, so an unbumped change never reaches anyone — this workflow
+# exists to make that failure mode impossible.
+#
+# The two runtimes version independently, so only the affected manifest moves:
+#
+#   skills/**    -> both runtimes   (.claude-plugin/plugin.json + plugin.json)
+#   sidecars/**  -> Antigravity only (plugin.json)
+#   everything else (README, AGENTS.md, scripts/, tests/, .github/) -> no release
+#
+# Downstream: the bot's bump commit is itself a push to main, so
+# notify-marketplace.yml dispatches on it and mlarkin00/plugins mirrors the
+# change and tags active-skills-v<claude-version>.
+on:
+  push:
+    branches:
+      - main
+
+# Serialize releases; never cancel one mid-tag.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    # Guard against the feedback loop from this job's own bump push.
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Bump affected runtime manifests
+        id: bump
+        run: |
+          set -euo pipefail
+
+          CLAUDE_MANIFEST=".claude-plugin/plugin.json"
+          AGY_MANIFEST="plugin.json"
+
+          # Files changed in this push (handles first-push / force-push gracefully).
+          BEFORE="${{ github.event.before }}"
+          if [ -z "$BEFORE" ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            CHANGED=$(git diff-tree --no-commit-id --name-only -r "${{ github.sha }}")
+          else
+            CHANGED=$(git diff --name-only "$BEFORE" "${{ github.sha }}")
+          fi
+          echo "Changed files:"; echo "$CHANGED"
+
+          BUMP_CLAUDE=false
+          BUMP_AGY=false
+
+          # Skills are runtime-neutral content — both runtimes ship them.
+          if echo "$CHANGED" | grep -qE '^skills/'; then
+            BUMP_CLAUDE=true
+            BUMP_AGY=true
+          fi
+
+          # Sidecars are an Antigravity-only feature; Claude ignores them.
+          if echo "$CHANGED" | grep -qE '^sidecars/'; then
+            BUMP_AGY=true
+          fi
+
+          # Patch-bump one manifest in place; echoes the new version.
+          bump_manifest() {
+            local file="$1" cur major minor patch new
+            cur=$(jq -r '.version' "$file")
+            IFS='.' read -r major minor patch <<< "$cur"
+            new="$major.$minor.$((patch + 1))"
+            jq --arg v "$new" '.version = $v' "$file" > tmp && mv tmp "$file"
+            git add "$file"
+            echo "$new"
+          }
+
+          TAGS=""
+          if [ "$BUMP_CLAUDE" = true ]; then
+            NEW=$(bump_manifest "$CLAUDE_MANIFEST")
+            echo "claude: -> $NEW"
+            TAGS="$TAGS claude-v$NEW"
+          fi
+          if [ "$BUMP_AGY" = true ]; then
+            NEW=$(bump_manifest "$AGY_MANIFEST")
+            echo "agy: -> $NEW"
+            TAGS="$TAGS agy-v$NEW"
+          fi
+
+          if [ -z "$TAGS" ]; then
+            echo "No release-relevant changes; nothing to bump."
+          fi
+          echo "tags=$(echo $TAGS | xargs)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit, tag, release
+        if: steps.bump.outputs.tags != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          MSG="chore: release$(for t in ${{ steps.bump.outputs.tags }}; do printf ' %s' "$t"; done)"
+          git commit -m "$MSG"
+
+          for t in ${{ steps.bump.outputs.tags }}; do
+            git tag "$t"
+          done
+
+          git push origin HEAD:main
+          git push origin --tags
+
+          for t in ${{ steps.bump.outputs.tags }}; do
+            gh release create "$t" --title "$t" --generate-notes
+          done
