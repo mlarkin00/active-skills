@@ -1,9 +1,11 @@
 __pycache__/
 *.pyc
 
-# This repo is the usage-counts destination: skill-usage.json is tracked here on
-# purpose, as metadata about the skills it counts. It is committed to a PUBLIC
-# repo by deliberate choice — see README. Only the lock and the atomic-write
-# temp files stay ignored; they are transient and machine-local.
-.skill-usage.lock
+# This repo is the usage-counts destination: skill-usage/ holds one tracked file
+# per machine, as metadata about the skills it counts. It is committed to a
+# PUBLIC repo by deliberate choice — see README. Sharding per machine is what
+# keeps several machines from ever conflicting on the same counts file.
+#
+# Only the atomic-write temp files stay ignored; they exist for milliseconds
+# during a write and must sit next to the target to make os.replace atomic.
 .skill-usage-*.tmp
