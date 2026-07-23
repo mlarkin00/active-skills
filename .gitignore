@@ -9,3 +9,10 @@ __pycache__/
 # Only the atomic-write temp files stay ignored; they exist for milliseconds
 # during a write and must sit next to the target to make os.replace atomic.
 .skill-usage-*.tmp
+
+# Root-level strays from the pre-sharding layout, plus the lock. These are the
+# backstop AGENTS.md describes: SKILL_USAGE_REPO pointed at a clone of this repo
+# writes counts here, and counts must never reach a public repo. Anchored to the
+# root so the tracked per-machine shards under skill-usage/ still commit.
+/skill-usage.json
+/.skill-usage.lock
