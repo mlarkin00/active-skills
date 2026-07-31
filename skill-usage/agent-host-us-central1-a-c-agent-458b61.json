@@ -54,5 +54,9 @@
   "verify-memory": {
     "count": 6,
     "last_used_at": "2026-07-22T21:05:44Z"
+  },
+  "writing-plans": {
+    "count": 1,
+    "last_used_at": "2026-07-31T02:19:45Z"
   }
 }
