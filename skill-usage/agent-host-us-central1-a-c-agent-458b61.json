@@ -3,6 +3,10 @@
     "count": 1,
     "last_used_at": "2026-07-22T23:28:47Z"
   },
+  "cloud-build-triggers": {
+    "count": 1,
+    "last_used_at": "2026-08-04T20:59:06Z"
+  },
   "code-design": {
     "count": 1,
     "last_used_at": "2026-07-22T23:42:43Z"
@@ -16,8 +20,8 @@
     "last_used_at": "2026-07-21T21:58:49Z"
   },
   "managing-agent-instructions": {
-    "count": 16,
-    "last_used_at": "2026-08-04T20:27:42Z"
+    "count": 17,
+    "last_used_at": "2026-08-04T21:47:49Z"
   },
   "memories-add": {
     "count": 1,
