@@ -37,7 +37,7 @@ done
 - A skill is `<skill-name>/SKILL.md` at the **repo root**. Everything the skill needs (`scripts/`, `references/`, `evals/`, `assets/`) goes inside its own directory and travels with it.
 - **A top-level directory without a `SKILL.md` is silently skipped by the sync** — no error, the skill just never ships. This is deliberate, so the repo can hold `docs/` or `drafts/` without them becoming phantom skills. It also means a typo'd `Skill.md` fails invisibly. The sync emits a `::notice::` listing skipped entries; that is where to look when a new skill doesn't appear.
 - **Nothing here is versioned.** Do not add a manifest or a version field. The plugin's sync patch-bumps its own manifests on every mirrored change, which is why a skill edit cannot be stranded by a forgotten bump.
-- Deletions propagate: the mirror is `rsync --delete`, so removing a skill here removes it from the plugin. A rename is a delete plus an add, and users lose the old name.
+- Deletions propagate: the mirror is `rsync --delete`, so removing a skill here removes it from the plugin. A rename is a delete plus an add, and users lose the old name. After removing a skill, sweep the surviving ones for its name — and repair only the pointers, never the citations, per `.agents/wiki/publishing/removing-a-skill-leaves-two-kinds-of-reference.md`.
 - There is no generated skill inventory in this README. `gen-readme.sh` lives in the plugin and regenerates the inventory there, against what actually shipped.
 - **Dev-only tooling goes in `.agents/tools/`, never inside a skill directory.** A skill's own subdirectories ship to users; `.agents/` does not, because the sync globs `*/` and that does not match dot-directories. Anything that exists to develop or measure the skills rather than to run them belongs there. Note the directory is currently absent — it is created on demand, not a fixture.
 
@@ -71,5 +71,6 @@ Open the concept before re-deriving anything it covers.
 ### Subdirectories
 
 * [evals](.agents/wiki/evals/index.md) - Contains 7 entries: claude -p --output-format json returns an array of messages, not a result object, Killing an eval runner leaves its nested claude -p sessions running and billing, Parallel trigger probes sharing one project root steal each other's command files, A trigger probe scores every positive as a miss for a skill that is also installed, An SDK-based propose step cannot run on an OAuth-authenticated machine, Passing enabledPlugins via --settings hides a plugin from one claude -p run, Trigger evals at 3 runs per query cannot separate two skill descriptions.
+* [publishing](.agents/wiki/publishing/index.md) - A pointer that tells a future agent to go somewhere must be repaired; a citation recording what was observed must not, because rewriting it falsifies the measurement. Re-pin the prose that frames the citation instead.
 
 <!-- llm-wiki:discovery .agents/wiki END -->

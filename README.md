@@ -25,7 +25,7 @@ If the dispatch fails or the token is missing, a daily poll at 06:17 UTC picks t
 **A skill is a top-level directory containing a `SKILL.md`.** That is the entire contract, and it is exactly what the sync selects on.
 
 ```
-systematic-debugging/
+skill-improvement/
 ├── SKILL.md              ← required; this is what makes it a skill
 ├── references/
 └── scripts/
@@ -60,7 +60,7 @@ Install the plugin, not this repo.
 /plugin install active-skills@mlarkin00-plugins
 ```
 
-Skills are namespaced under the plugin, e.g. `active-skills:systematic-debugging`.
+Skills are namespaced under the plugin, e.g. `active-skills:skill-improvement`.
 
 **Antigravity** — clone the marketplace repo once, then bulk-install from it:
 

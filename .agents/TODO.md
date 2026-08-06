@@ -4,16 +4,34 @@ Backlog for the skills themselves. Not synced to the plugin — the mirror only
 takes top-level directories containing a `SKILL.md`, and the `*/` glob does not
 match dot-directories.
 
+## P0 — Address Immediately
+
+- [ ] **[P0]** **Push the 2026-08-06 skill removals — held on
+  `feat/remove-agent-workflow-skills`, not merged to `main`.** Twenty skills were
+  removed (`using-agent-workflow` and the workflow-methodology set it indexed:
+  `writing-plans`, `executing-plans`, `subagent-driven-development`,
+  `test-driven-development`, `systematic-debugging`, `verification-before-completion`,
+  `requesting-code-review`, `receiving-code-review`, `finishing-a-development-branch`,
+  `using-git-worktrees`, `dispatching-parallel-agents`, `brainstorming`, `grill-me`,
+  `handoff`, `explanatory-mode`, `skill-portfolio-review`, `optimizing-prompts-w-vertex`,
+  `gemini-interactions-api`, `google-cloud-recipe-auth`). The sync is `rsync --delete`,
+  so pushing removes all twenty from every installed user with no deprecation window,
+  and `/writing-plans`, `/systematic-debugging`, and the rest start returning nothing.
+  The shipping set drops from 34 skills to 14. Push when that is intended — or say
+  "push anyway".
+
 ## P2 — Nice-to-Have
 
-- [ ] **[P2]** **Two eval prompts name `refresh-skills`, which no longer exists.**
-  `skill-improvement/evals/evals.json` ("Review my SKILL.md in
-  active-skills/refresh-skills…") and `skill-portfolio-review/evals/evals.json`
-  ("Consolidate git-sync and refresh-skills…") were written against a skill removed
-  2026-08-06, so both cases now point at a directory that isn't there and cannot be
-  run as written. Repoint them at a skill that still exists — `git-sync` is the
-  natural substitute in both, since it was the other half of the consolidation the
-  second prompt describes.
+- [ ] **[P2]** **`project-setup`'s evals test behaviour the skill has never had.**
+  Three assertions in `project-setup/evals/evals.json` require the agent to clone
+  `https://github.com/mlarkin00/agent-memory` into the project root *before*
+  invoking `managing-agent-instructions` ("Clones agent-memory", "Seeds Before
+  Docs", "Seeds Memory Despite Deprioritization"), but `project-setup/SKILL.md`
+  does not mention `agent-memory` anywhere and `git log -S agent-memory --
+  project-setup/SKILL.md` returns nothing — it was never there. So the cases fail
+  as written. Decide which side is right: either add the memory-seeding step to the
+  skill, or drop those assertions. Found 2026-08-06 during the dangling-reference
+  sweep; unrelated to the skill removals.
 
 - [ ] **[P2]** **`skill-creator-enhanced` does not fire on rewording an existing
   skill description.** Its description advertises "optimize a skill's description
@@ -57,8 +75,10 @@ match dot-directories.
   ```
   Do **not** run `claude plugin disable active-skills` first. Probe isolation is
   automatic per-invocation via `--settings`; disabling the plugin globally would
-  also remove `new-prompt` and `optimizing-prompts-w-vertex`, which are exactly the
-  competitors the near-miss queries exist to test against. Preflight quotes the
+  also remove `new-prompt` and `skill-creator-enhanced`, which are exactly the
+  competitors the near-miss queries exist to test against. (`optimizing-prompts-w-vertex`
+  was the third such competitor and was removed 2026-08-06 — see the eval set's
+  README on query 11.) Preflight quotes the
   budget and waits for confirmation: ~200 sessions per iteration, up to 5. If a run
   is aborted, sweep leftovers with `python -m scripts.run_eval --cleanup`. The three
   stored result files predate the two added negatives and cannot be compared against

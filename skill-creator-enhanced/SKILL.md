@@ -73,7 +73,7 @@ Check available MCPs - if useful for research (searching docs, finding similar s
 
 Based on the user interview, fill in these components:
 
-- **name**: Skill identifier. Must be 1-64 chars, kebab-case. Use simple and descriptive names (e.g., `code-design` instead of `designing-code`, `doc-review` instead of `reviewing-docs`). Avoid gerund forms (verbs ending in -ing).
+- **name**: Skill identifier. Must be 1-64 chars, kebab-case. Use simple and descriptive names (e.g., `pdf-extract` instead of `extracting-pdfs`, `doc-review` instead of `reviewing-docs`). Avoid gerund forms (verbs ending in -ing).
 - **description**: The primary triggering mechanism — include both what the skill does AND specific contexts for when to use it. Must start with "Use when..." or "Use this skill when...". Must NOT summarize the workflow or list steps (agents may follow the description instead of reading the body). All "when to use" info goes here, not in the body. Note: currently agents may have a tendency to "undertrigger" skills -- to not use them when they'd be useful. To combat this, make skill descriptions a little bit "pushy". So for instance, instead of "How to build a simple fast dashboard to display internal sales data.", write "How to build a simple fast dashboard to display internal sales data. Make sure to use this skill whenever the user mentions dashboards, data visualization, internal metrics, or wants to display any kind of company data, even if they don't explicitly ask for a 'dashboard.'"
 - **category**: The taxonomy classification under `metadata` in YAML frontmatter. All skills must belong to one of these 9 categories:
   - `library-reference` (Static API guides, library documentation, framework design rules)

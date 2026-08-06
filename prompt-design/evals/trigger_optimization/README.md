@@ -1,10 +1,17 @@
 # Trigger optimization — `prompt-design`
 
 22 queries, 10 positive / 12 near-miss. The negatives include the in-repo skills
-that compete on overlapping phrasing (`optimizing-prompts-w-vertex`, `new-prompt`,
-`skill-creator-enhanced`) plus the "user wants the output, not a prompt for the
-output" class, which is the boundary `prompt-design`'s description is most likely
-to over-claim.
+that compete on overlapping phrasing (`new-prompt`, `skill-creator-enhanced`) plus
+the "user wants the output, not a prompt for the output" class, which is the
+boundary `prompt-design`'s description is most likely to over-claim.
+
+**Query 11 lost its owner.** "Run the Vertex AI Prompt Optimizer on this prompt and
+give me steering hints between iterations" was written as a *routing* negative
+against `optimizing-prompts-w-vertex`, removed from this repo 2026-08-06. It stays a
+correct negative — `prompt-design` should not claim a request to drive a specific
+external tool — but it now tests only non-triggering, not routing. Keep it or
+replace it deliberately; do not read a 0.00 on it as evidence the boundary still
+works.
 
 ## Writing a skill description belongs to `skill-creator-enhanced`
 
@@ -78,7 +85,12 @@ Full account, and what a conclusive run costs:
 
 Every negative held at 0.00 across all three runs except `/new-prompt`, which
 touched 0.33 twice. Whatever else is uncertain, `prompt-design` is not
-over-triggering, and the Vertex and Cloud Build queries route to the right skills.
+over-triggering, and the Vertex and Cloud Build queries routed to the right skills.
+
+All three runs predate the 2026-08-06 skill removals and were measured with
+`optimizing-prompts-w-vertex` installed, which is what the Vertex query routed to.
+The `fired` fields in the result JSONs record that competitor by name; they are the
+measurement as taken and are left as-is.
 
 ## Two queries were rewritten after the first run
 
