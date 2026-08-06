@@ -20,7 +20,8 @@ published, and what breaks when you try. Evals, tooling, and publishing mechanic
 .agents/wiki/
 ├── index.md          # auto-generated root catalog — do not edit by hand
 ├── CLAUDE.md         # this file
-└── evals/            # measuring skills: triggering, benchmarks, harness behaviour
+├── evals/            # measuring skills: triggering, benchmarks, harness behaviour
+└── publishing/       # shipping skills to users: the sync, removals, provenance
 ```
 
 ## Type vocabulary
