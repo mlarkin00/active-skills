@@ -4,4 +4,4 @@ okf_version: "0.1"
 
 # Subdirectories
 
-* [evals](evals/index.md) - Contains 3 entries: run_eval.py scores every positive as a miss for a skill that is also installed, run_loop.py cannot run on this box — it needs the anthropic SDK and an API key, Trigger evals at 3 runs per query cannot separate two skill descriptions.
+* [evals](evals/index.md) - Contains 7 entries: claude -p --output-format json returns an array of messages, not a result object, Killing an eval runner leaves its nested claude -p sessions running and billing, Parallel trigger probes sharing one project root steal each other's command files, A trigger probe scores every positive as a miss for a skill that is also installed, An SDK-based propose step cannot run on an OAuth-authenticated machine, Passing enabledPlugins via --settings hides a plugin from one claude -p run, Trigger evals at 3 runs per query cannot separate two skill descriptions.

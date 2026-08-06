@@ -55,15 +55,22 @@ ships with the skill.
 
 ## Discoverability — do not remove this
 
-This repo has **no `CLAUDE.md`** — only `AGENTS.md`. Claude Code never reads
-`AGENTS.md`, and `agy` reads it but does not expand `@` imports, so an
-`@.agents/wiki/index.md` line there would fire for nobody. The catalog is therefore
-**inlined** into `AGENTS.md` between `<!-- llm-wiki:discovery -->` markers.
+This repo has **two** briefing files, and each reaches exactly one runtime: Claude
+Code reads `CLAUDE.md` and never `AGENTS.md`; `agy` reads `AGENTS.md` and never
+expands `@` imports. So the bundle is wired in twice, in two different modes, both
+between `<!-- llm-wiki:discovery -->` markers:
 
-**If that block is deleted, this bundle stops being read.**
+| File | Mode | Form |
+| :--- | :--- | :--- |
+| `CLAUDE.md` | import | `@.agents/wiki/index.md` — the harness loads it |
+| `AGENTS.md` | inline | the catalog itself, copied in |
 
-The inlined form is a **copy** and goes stale on every added, renamed, or deleted
-concept. Refresh and check it with:
+**If either block is deleted, this bundle stops being read by that runtime** — and
+nothing visible breaks, so nothing tells you.
+
+The inlined form in `AGENTS.md` is a **copy** and goes stale on every added,
+renamed, or deleted concept. The import in `CLAUDE.md` does not. Refresh and check
+both with:
 
 ```bash
 L=~/.claude/plugins/cache/mlarkin00-plugins/llm-wiki/<version>
@@ -79,4 +86,6 @@ Or the slash commands, which do the same: `/llm-wiki:index`, `/llm-wiki:validate
 
 Regenerate the index and refresh discovery after any concept is added, renamed, or
 deleted — the two are one step, and skipping the second leaves `AGENTS.md`
-advertising a catalog that no longer matches the bundle.
+advertising a catalog that no longer matches the bundle. `CLAUDE.md` is unaffected
+by staleness (it imports rather than copies), which is exactly why a drifted
+`AGENTS.md` is easy to miss from a Claude Code session.

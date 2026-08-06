@@ -39,7 +39,7 @@ done
 - **Nothing here is versioned.** Do not add a manifest or a version field. The plugin's sync patch-bumps its own manifests on every mirrored change, which is why a skill edit cannot be stranded by a forgotten bump.
 - Deletions propagate: the mirror is `rsync --delete`, so removing a skill here removes it from the plugin. A rename is a delete plus an add, and users lose the old name.
 - There is no generated skill inventory in this README. `gen-readme.sh` lives in the plugin and regenerates the inventory there, against what actually shipped.
-- **Dev-only tooling goes in `.agents/tools/`, never inside a skill directory.** A skill's own subdirectories ship to users; `.agents/` does not, because the sync globs `*/` and that does not match dot-directories. Anything that exists to develop or measure the skills rather than to run them belongs there — e.g. `.agents/tools/trigger_eval.py`.
+- **Dev-only tooling goes in `.agents/tools/`, never inside a skill directory.** A skill's own subdirectories ship to users; `.agents/` does not, because the sync globs `*/` and that does not match dot-directories. Anything that exists to develop or measure the skills rather than to run them belongs there. Note the directory is currently absent — it is created on demand, not a fixture.
 
 ## Architecture & Constraints
 
@@ -52,6 +52,8 @@ done
 **`AGENTS.md` and `CLAUDE.md` reach different runtimes and are not redundant.** Claude Code reads `CLAUDE.md` and never `AGENTS.md`; `agy` reads `AGENTS.md` and never expands `@` imports. That is why the bundle appears below as an inlined catalog and in `CLAUDE.md` as a one-line import — each runtime gets exactly one copy. Deleting or symlinking either file collapses the arrangement and silently cuts a runtime off from the bundle.
 
 **Findings go in `.agents/wiki/`, not `.agents/TODO.md`.** A fact that cost investigation to establish and is not derivable from these files is a concept in the bundle, version-pinned. TODO holds work still to do. A closed finding parked in TODO sits there forever looking actionable.
+
+**Design docs go in `docs/designs/YYYY-MM-DD-<slug>.md`.** `docs/` has no `SKILL.md`, so the sync skips it. Do not put a design doc inside a skill directory (it would ship to users) and do not name one `DESIGN.md` at the repo root — that filename is reserved for a design-system spec in the `google/design.md` format.
 
 **Never:**
 - Add a `plugin.json`, `.claude-plugin/`, or any version field — this repo is not a plugin
@@ -68,6 +70,6 @@ Open the concept before re-deriving anything it covers.
 
 ### Subdirectories
 
-* [evals](.agents/wiki/evals/index.md) - Contains 3 entries: run_eval.py scores every positive as a miss for a skill that is also installed, run_loop.py cannot run on this box — it needs the anthropic SDK and an API key, Trigger evals at 3 runs per query cannot separate two skill descriptions.
+* [evals](.agents/wiki/evals/index.md) - Contains 7 entries: claude -p --output-format json returns an array of messages, not a result object, Killing an eval runner leaves its nested claude -p sessions running and billing, Parallel trigger probes sharing one project root steal each other's command files, A trigger probe scores every positive as a miss for a skill that is also installed, An SDK-based propose step cannot run on an OAuth-authenticated machine, Passing enabledPlugins via --settings hides a plugin from one claude -p run, Trigger evals at 3 runs per query cannot separate two skill descriptions.
 
 <!-- llm-wiki:discovery .agents/wiki END -->

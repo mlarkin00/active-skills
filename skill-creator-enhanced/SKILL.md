@@ -496,6 +496,20 @@ python -m scripts.run_loop \
 
 Use the model ID from your system prompt (the one powering the current session) so the triggering test matches what the user actually experiences.
 
+**The skill under test must NOT already be installed.** The loop measures a candidate description by injecting it under a throwaway name; if a real copy of the skill is installed (as a plugin, or in `~/.claude/skills/`), that copy carries the *shipped* description, wins the call, and the candidate is never measured. The loop detects this and aborts with a message naming the skill — uninstall it, or run somewhere it isn't installed, then re-run. Do not interpret a contaminated run as a bad description.
+
+To measure the description a skill **already ships with**, in the competitive environment it actually lives in, use live mode instead — it reports which skill won each query, which is what you need when several skills overlap:
+
+```bash
+python -m scripts.run_eval \
+  --eval-set <path-to-trigger-eval.json> \
+  --skill-path <path-to-skill> \
+  --mode live --cwd "$(mktemp -d)" \
+  --runs-per-query 10 --timeout 120 --verbose
+```
+
+Run from an empty `--cwd`: a directory full of source sends the nested session reading code instead of choosing a skill.
+
 While it runs, periodically tail the output to give the user updates on which iteration it's on and what the scores look like.
 
 This handles the full optimization loop automatically. It splits the eval set into 60% train and 40% held-out test, evaluates the current description (running each query 3 times to get a reliable trigger rate), then calls the agent with extended thinking to propose improvements based on what failed. It re-evaluates each new description on both train and test, iterating up to 5 times. When it's done, it opens an HTML report in the browser showing the results per iteration and returns JSON with `best_description` — selected by test score rather than train score to avoid overfitting.

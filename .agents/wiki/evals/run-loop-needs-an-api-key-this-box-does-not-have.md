@@ -1,13 +1,20 @@
 ---
 type: Pitfall
 resource: skill-creator-enhanced/scripts/run_loop.py
-title: run_loop.py cannot run on this box — it needs the anthropic SDK and an API key
-description: The eval half shells out to the claude CLI and works, but the improve
-  half calls the Anthropic API directly, and neither the SDK nor ANTHROPIC_API_KEY
-  is present, so description optimization has to be iterated by hand.
+title: An SDK-based propose step cannot run on an OAuth-authenticated machine
+description: Calling the Anthropic API directly needs ANTHROPIC_API_KEY, which a
+  machine authenticating Claude Code through OAuth does not have; resolved
+  2026-08-06 by shelling out to claude -p, the same transport the eval half uses.
 tags: [evals, skill-creator-enhanced, environment]
 timestamp: '2026-08-06T02:50:00+00:00'
 ---
+
+> **Resolved 2026-08-06.** `improve_description.py` now delegates to
+> `scripts/propose.py`, which shells out to `claude -p` and inherits the user's
+> auth; no script in the skill imports `anthropic` any more. The account below is
+> why the transport is what it is — do not "simplify" it back to the SDK, which
+> would break the loop for every OAuth user, not just this box. Call shape in
+> [claude -p --output-format json returns an array](claude-p-json-output-is-an-array.md).
 
 `run_loop.py` is documented as the entry point for description optimization, but it
 is two halves with different requirements:

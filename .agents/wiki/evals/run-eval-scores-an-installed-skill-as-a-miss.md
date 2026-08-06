@@ -1,13 +1,19 @@
 ---
 type: Pitfall
 resource: skill-creator-enhanced/scripts/run_eval.py
-title: run_eval.py scores every positive as a miss for a skill that is also installed
-description: The probe injects a uniquely-named command file and counts only calls
-  to that name, but the real installed plugin skill wins the call, so trigger rates
-  read 0.00 for descriptions that are in fact firing correctly.
+title: A trigger probe scores every positive as a miss for a skill that is also installed
+description: Injecting a uniquely-named command file and counting only calls to that
+  name reads 0.00 for descriptions that are in fact firing, because the installed
+  plugin skill wins the call; fixed 2026-08-06 by adding a live mode and by counting
+  contaminated runs as unmeasured rather than failed.
 tags: [evals, skill-creator-enhanced, triggering, measurement]
 timestamp: '2026-08-06T02:50:00+00:00'
 ---
+
+> **Fixed 2026-08-06.** `run_eval.py` now has `--mode live` (measures the installed
+> skill, default when no `--description` is given) and probe mode reports runs the
+> installed skill won as `unmeasured`, not failed. The account below is why the
+> modes exist; do not collapse them back into one.
 
 `run_eval.py` measures triggering by writing a throwaway command file at
 `.claude/commands/<skill>-skill-<uuid8>.md` carrying the description under test,
@@ -49,37 +55,53 @@ towards nothing.
 The negatives are unaffected (they score 0.00 and pass), so a run can look
 half-plausible rather than obviously broken.
 
-## What to do instead
+## The fix, as shipped
 
-Measure against the **live** skill set and record which skill actually fired, which
-is also the measurement the competing-descriptions question needs — `prompt-design`,
-`new-prompt`, and `optimizing-prompts-w-vertex` overlap, and only a run where all
-three are present shows which one wins a near-miss query. Parse the same stream
-events `run_eval.py` does, but accept any `Skill` call and compare its `skill`
-argument against the plugin-qualified name (`active-skills:prompt-design`).
+`run_eval.py` accepts any `Skill` call and compares its `skill` argument against
+the skill under test, matching bare (`prompt-design`) or plugin-qualified
+(`active-skills:prompt-design`) — suffix match on `:<name>`, never substring, since
+`prompt-design` is a substring of `prompt-design-v2`. It records the name that
+fired, per run, which is the measurement the competing-descriptions question needs:
+`prompt-design`, `new-prompt`, and `optimizing-prompts-w-vertex` overlap, and only
+a run where all three are present shows which wins a near-miss query.
 
-`.agents/tools/trigger_eval.py` does this. It lives under `.agents/` deliberately:
-that path is outside the plugin mirror, which takes only top-level directories
-containing a `SKILL.md`, so a dev-only runner there does not ship to users. Fold it
-into `run_eval.py` when that is fixed, rather than leaving two runners.
+Two modes, because they answer different questions:
+
+| Mode | Measures | Trigger is |
+| :--- | :--- | :--- |
+| `live` (default) | the **shipped** description, against real competitors | a call to the skill under test |
+| `probe` (implied by `--description`) | a **candidate** description not installed anywhere | a call to the throwaway probe name |
 
 ```bash
-python3 .agents/tools/trigger_eval.py \
-  --eval-set <skill>/evals/trigger_optimization/eval_set.json \
-  --skill <skill-name> --cwd <empty-scratch-dir> \
-  --runs-per-query 3 --num-workers 10 --out results.json
+cd skill-creator-enhanced
+python3 -m scripts.run_eval \
+  --eval-set ../<skill>/evals/trigger_optimization/eval_set.json \
+  --skill-path ../<skill> \
+  --mode live --cwd "$(mktemp -d)" \
+  --runs-per-query 10 --num-workers 10 --timeout 120 > results.json
 ```
 
-Run it from a scratch directory with no project files: the query is answered by a
-real nested session, and a repo full of source will send it reading code instead of
-choosing a skill. A query that cannot be answered without an artifact the session
-cannot see (\"tighten up our bot's system prompt\", with no prompt pasted) makes the
-model go looking for the file and ask for it — correct behaviour, but it scores as
-a non-trigger and tests nothing. Keep eval queries self-contained.
+Verified 2026-08-06, Claude Code 2.1.x: the `prompt-design` positive that read
+`trigger_rate: 0.0` above now reads `1.0` with `fired: ["active-skills:prompt-design"]`,
+and the Vertex negative passes showing `fired: ["active-skills:optimizing-prompts-w-vertex"]`.
 
-Uninstalling the plugin to unblock `run_eval.py` also works and is worse: it
-removes the competitors along with the duplicate, so near-miss queries stop being
-discriminating.
+Probe mode cannot be de-contaminated in this environment — Claude Code loads
+user-level plugins regardless of cwd, and the only flags that would strip them
+(`--bare`, `--disable-slash-commands`) either need an API key this box does not have
+or remove every skill. So probe mode **counts** the runs the installed skill won and
+excludes them: they appear as `contaminated`, a fully-contaminated query reports
+`pass: null` / `UNMEAS` rather than a failure, and `run_loop.py` aborts outright
+above 25% contamination rather than iterating a working description toward nothing.
+
+Run from a scratch directory with no project files. A query that cannot be answered
+without an artifact the session cannot see ("tighten up our bot's system prompt",
+with no prompt pasted) makes the model go looking for the file and ask for it —
+correct behaviour, but it scores as a non-trigger and tests nothing. Keep eval
+queries self-contained.
+
+Uninstalling the plugin to unblock probe mode works and is worse: it removes the
+competitors along with the duplicate, so near-miss queries stop being
+discriminating. Prefer live mode.
 
 See [run_loop.py cannot run on this box](run-loop-needs-an-api-key-this-box-does-not-have.md)
 for the second reason the documented loop does not run here, and

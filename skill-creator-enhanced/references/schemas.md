@@ -2,6 +2,14 @@
 
 This document defines the JSON schemas used by skill-creator.
 
+**`assertions` on the way in, `expectations` on the way out.** The two names refer
+to the same statements at different stages and are not interchangeable: what an
+author writes in `evals.json` / `eval_metadata.json` is `assertions`; what the
+grader emits in `grading.json` — each one paired with `passed` and `evidence` — is
+`expectations`. The viewer and `aggregate_benchmark.py` read the output name; a
+grader handed the wrong key finds an empty list and grades nothing, silently. Do
+not "unify" them without changing both sides.
+
 ---
 
 ## evals.json
@@ -14,10 +22,11 @@ Defines the evals for a skill. Located at `evals/evals.json` within the skill di
   "evals": [
     {
       "id": 1,
+      "name": "descriptive-eval-name",
       "prompt": "User's example prompt",
       "expected_output": "Description of expected result",
       "files": ["evals/files/sample1.pdf"],
-      "expectations": ["The output includes X", "The skill used script Y"]
+      "assertions": ["The output includes X", "The skill used script Y"]
     }
   ]
 }
@@ -27,10 +36,11 @@ Defines the evals for a skill. Located at `evals/evals.json` within the skill di
 
 - `skill_name`: Name matching the skill's frontmatter
 - `evals[].id`: Unique integer identifier
+- `evals[].name`: Optional short descriptive name, also used as the run directory name
 - `evals[].prompt`: The task to execute
 - `evals[].expected_output`: Human-readable description of success
 - `evals[].files`: Optional list of input file paths (relative to skill root)
-- `evals[].expectations`: List of verifiable statements
+- `evals[].assertions`: List of verifiable statements. Becomes `expectations` in `grading.json` once graded — see the note at the top of this file.
 
 ---
 
@@ -150,7 +160,7 @@ Output from the grader agent. Located at `<run-dir>/grading.json`.
 
 **Fields:**
 
-- `expectations[]`: Graded expectations with evidence
+- `expectations[]`: The eval's `assertions`, graded — each with `text`, `passed`, and `evidence`. These three field names are exact; the viewer depends on them.
 - `summary`: Aggregate pass/fail counts
 - `execution_metrics`: Tool usage and output size (from executor's metrics.json)
 - `timing`: Wall clock timing (from timing.json)
