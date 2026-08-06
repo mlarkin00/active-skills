@@ -6,6 +6,23 @@ match dot-directories.
 
 ## P2 — Nice-to-Have
 
+- [ ] **[P2]** **`agent-eval-implement` and `agent-eval-run` autonomously trigger
+  on only ~half their positives.** Measured 2026-08-06, live mode, 5 runs/query,
+  zero contamination: `agent-eval-design` 1.00/0.66, `agent-eval-implement`
+  0.49/0.51, `agent-eval-run` 0.51 positive trigger rate. Deprioritised from P1
+  because Matt confirmed these skills are normally invoked **explicitly** (by the
+  user or via a sibling's cross-pointer), so autonomous trigger rate is not the
+  binding constraint. Two things are settled and need no rework: **every
+  near-miss query measured held at 0.00** (35 of 42 skill×query negative cells —
+  all 21 in run 1, plus design and implement in run 2; `agent-eval-run`'s run-2
+  negatives were still executing at session close and are the only unmeasured
+  cell) — no over-triggering, and sibling/competitor routing is correct — and a
+  description rewrite aimed at the gap moved composition without moving the
+  aggregate. Do not re-attempt tuning at
+  n≤5; per `.agents/wiki/evals/three-runs-per-query-cannot-separate-two-descriptions.md`
+  an unchanged description drifted 0.34 in this very run, so any retry needs
+  interleaved conditions and ~10+ runs/query (~200+ sessions per candidate).
+
 - [ ] **[P2]** **`project-setup`'s evals test behaviour the skill has never had.**
   Three assertions in `project-setup/evals/evals.json` require the agent to clone
   `https://github.com/mlarkin00/agent-memory` into the project root *before*

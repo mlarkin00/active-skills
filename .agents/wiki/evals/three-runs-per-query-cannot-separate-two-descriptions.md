@@ -41,6 +41,43 @@ Aggregate standard error at 3 runs × 10 positives is √(0.25/30) ≈ 0.09, so 
 threshold for a believable difference is roughly ±0.18 — about two full queries'
 worth. Nothing smaller than that is readable at this sample size.
 
+## Five runs is not enough either, and the noise is worse than binomial
+
+Replicated 2026-08-06 on the `agent-eval-*` skills at **5** runs per query, 7
+positives per skill (35 observations), live mode, zero contamination. The control
+is cleaner than the one above: `agent-eval-design`'s description was **byte
+identical** across the two runs — same SHA1 `5ae1a03dce6e12e1` — while only its
+two *sibling* skills' descriptions changed between them.
+
+| Run | design positive rate |
+| :--- | ---: |
+| v1 (21:26–21:43) | 1.00 |
+| v2 (22:13–22:26) | 0.66 |
+
+An unchanged description moved **0.34**. Binomial standard error at 35
+observations is √(0.25/35) ≈ 0.085, predicting a believable-difference threshold
+around ±0.17 — so the observed drift is roughly **twice what binomial noise
+allows**. Sizing a run with √(p(1−p)/n) therefore *understates* the sample needed;
+the per-query rate is not a stable Bernoulli parameter across time windows.
+
+The same run reproduced the original finding independently: `agent-eval-implement`
+scored 0.49 then 0.51 across a deliberate rewrite that took two dead queries from
+0.00 to 1.00 and 0.80, while four previously-passing queries fell. Aggregate
+motionless, composition churned — the 0.500-vs-0.500 signature again.
+
+Two candidate mechanisms, not separated: genuine interference (a sibling
+description that newly claims overlapping territory can make the model fire
+*nothing* rather than pick — every one of design's dropped queries fired `(none)`,
+not a sibling), versus plain temporal drift. Distinguishing them needs conditions
+interleaved within one time window, not run back to back.
+
+The negative half replicated perfectly: **0.00 over-triggering in every
+near-miss cell measured** — 35 of the 42 skill×query negative cells (all 21 in
+run 1; design and implement in run 2, with `agent-eval-run`'s run-2 negatives
+still executing when this was written) — with correct routing to
+`skill-creator-enhanced`, `cloud-build-triggers`, and `optimizing-prompts-w-vertex`.
+That half of the guidance below is confirmed, not merely predicted.
+
 ## What to do instead
 
 Judge on the **aggregate positive trigger rate**, not per-query pass/fail, and size
