@@ -6,18 +6,61 @@ match dot-directories.
 
 ## P1 — Important / Unblocking
 
-_(none)_
+- [ ] **[P1]** **Populate `CLAUDE.md` with real content — it is currently a
+  redirect.** Created 2026-08-06 so the knowledge bundle could reach a Claude Code
+  session at all (`okf_discover.py` refuses to call a repo wired when the only
+  briefing file is one Claude Code never reads). It carries the bundle import and a
+  sentence pointing at `AGENTS.md`, which means **none of the repo's actual rules
+  are loaded content for Claude Code** — not the mirror contract, not the "this repo
+  is public" warning, not the `Never:` list. That gap predates the file; the file
+  only made it visible.
+  Do NOT fix it by symlinking to `AGENTS.md`: `managing-agent-instructions` bans
+  symlinked briefing files, and `okf_discover.py` demotes a shared `CLAUDE.md` to
+  inline mode, so the two runtimes would stop getting one copy each. Copy the rules
+  across by hand, per the standalone-files mandate, keeping anything genuinely
+  agy-specific out of `CLAUDE.md`.
 
 ## P2 — Nice-to-Have
 
-- [ ] **[P2]** File the `color-mix` interpolation-space bug upstream at [google-labs-code/design.md](https://github.com/google-labs-code/design.md). The `design.md` colour validator accepts `color-mix(in srgb, …)` and rejects all 14 other CSS Color Level 5 interpolation spaces (`oklab`, `oklch`, `lab`, `lch`, `hsl`, `hwb`, `display-p3`, `rec2020`, `xyz*`) — almost certainly a hardcoded `in srgb` literal matching the single example in the tool's own published spec, which lists Mixing as supported, so the linter contradicts its own spec. Present in both 0.3.0 and 0.4.0, so it has survived three minor releases from the v0.1.1 this skill used to document — "wait for the alpha to mature" is no longer a reasonable position. Report should state the precise scope (only `in srgb` passes) and the spec contradiction, not the vaguer "it never learned `color-mix()`". Real cost: `lint` exits 1 on correct files, so it cannot gate CI unpinned. The skill-side documentation of this false positive landed 2026-08-06; this item is only the upstream report, which needs a human to file.
+- [ ] **[P2]** **Fix `run_eval.py` so it can measure a skill that is also
+  installed.** It injects a uniquely-named command file and counts only calls to
+  that name, but the real plugin skill wins the call, so every positive scores 0.00
+  and a correct description reads as a total triggering failure. Measured
+  2026-08-06; full account and the workaround in
+  `.agents/wiki/evals/run-eval-scores-an-installed-skill-as-a-miss.md`. The fix is
+  small — accept any `Skill` call and compare against the plugin-qualified name —
+  and it matters because `run_loop.py` inherits the defect and would iterate a
+  description toward nothing, unattended. Note the negatives are unaffected, so a
+  broken run looks half-plausible rather than obviously wrong.
 
-  Worth reporting in the same breath: **`--format` is a no-op on `lint` and `diff`** in 0.4.0. Both advertise `--format json|text` in `--help`, but the flag is parsed and discarded — `--format text` returns JSON, and an invalid value (`--format=banana`) is accepted silently instead of erroring. Only `export` honours it.
+- [ ] **[P2]** **Settle the eval field name: `assertions` or `expectations`.**
+  `skill-creator-enhanced/references/schemas.md` defines `expectations` and
+  `grading.json` consumes that name (the viewer depends on it), but `SKILL.md:239`
+  tells the author to see schemas.md "including the `assertions` field", which
+  schemas.md does not document. The repo now has one of each:
+  `gcloud/evals/evals.json` uses `assertions`, `prompt-design/evals/evals.json` uses
+  `expectations`. Pick the schema's name, fix the SKILL.md sentence, and migrate the
+  odd one out — a grader reading the wrong key silently grades nothing.
 
-- [ ] **[P2]** Run description optimization for `prompt-design`. The TCREI rewrite (2026-07-22) shipped with a hand-written description that was never tested for triggering. It matters more than usual here because three skills now compete on overlapping phrasing — `prompt-design`, `new-prompt`, and `optimizing-prompts-w-vertex` — and the near-miss cases are what separate them. Use `skill-creator-enhanced`'s `scripts/run_loop.py` against ~20 realistic queries.
+- [ ] **[P2]** **Re-run `prompt-design`'s description optimization at a sample size
+  that can answer it.** Attempted 2026-08-06 and **inconclusive, not negative** — two
+  candidates scored 14/20 and 16/20, which looks like a result and is not: their mean
+  positive trigger rates were identical to three decimals (0.500 / 0.500) while 4 of
+  10 positives flipped by ≥0.66, and the additive candidate, which contains the
+  shipped opening sentence verbatim, scored 0.33 where the shipped text scored 1.00
+  on that sentence's own case. The shipped description was kept. Everything needed to
+  resume is in `prompt-design/evals/trigger_optimization/` (20-query set, three result
+  files, README); the reasoning and the sizing are in
+  `.agents/wiki/evals/three-runs-per-query-cannot-separate-two-descriptions.md`.
+  **Budget before promising an answer:** judge on aggregate positive trigger rate,
+  not per-query pass/fail, at ~10 runs per query — roughly 200 nested `claude -p`
+  sessions per candidate. Do the `run_eval.py` fix above first, or this measures
+  nothing. The over-triggering half is already settled: every near-miss held at 0.00
+  across all three runs, so no further work is needed there.
 
-- [ ] **[P2]** Sharpen or drop one assertion in `prompt-design/evals/evals.json`. Grading the TCREI rewrite showed eval-1 assertion 5 ("does not fabricate an audience or format") passes for any response that asks questions at all, so it discriminates nothing. Worth fixing before the eval set is expanded, since a non-discriminating assertion inflates future pass rates.
-
-- [ ] **[P2]** Reconcile the `@`-import model with `llm-wiki`'s own discoverability P1, which proposes a `SessionStart` hook injecting the root index. The import supersedes the hook for any host that supports briefing-file imports (Claude Code, Gemini CLI), so the hook should be documented there as the **fallback for hosts without them**, not the primary mechanism — and `/llm-wiki:init` should offer to write the import line into the host repo's briefing file. Filed against `llm-wiki` in `mlarkin00/plugins`; this is the skills-side half, and the skills-side model has now landed (`managing-agent-instructions` Phase 6 + `references/knowledge-bundle.md`).
-
-- [ ] **[P2]** Consider scaffolding `.agents/wiki/` for this repo itself. `managing-agent-instructions` Phase 6 now mandates a bundle in every project, and this repo has none — the skills prescribe a discipline they don't yet practise. Only worth doing if there are findings that pass the scope test (cost investigation, not derivable from the skill files); the option-(b) dependency decision is already recorded in the skill text itself, so it does not need a concept.
+- [ ] **[P2]** **Add the `skill-creator-enhanced` near-miss to `prompt-design`'s
+  trigger eval set.** The 2026-08-06 set covers the in-repo competitors
+  (`new-prompt`, `optimizing-prompts-w-vertex`) but nothing probing the boundary with
+  `skill-creator-enhanced` — "write me a skill description that triggers reliably" is
+  prompt work by any reasonable reading and is currently tested neither way. Decide
+  which skill owns it before adding the case.
