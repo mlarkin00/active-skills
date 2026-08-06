@@ -98,7 +98,7 @@ These thoughts mean STOP — rationalizing:
 Multiple skills apply, use order:
 
 1. **Process skills first** (brainstorming, systematic-debugging) — determine HOW to approach
-2. **Implementation skills second** (frontend-design, code-design) — guide execution
+2. **Implementation skills second** (test-driven-development, writing-plans) — guide execution
 
 "Let's build X" → brainstorming first, then implementation.
 "Fix this bug" → systematic-debugging first, then domain skills.

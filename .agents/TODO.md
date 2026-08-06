@@ -28,6 +28,17 @@ match dot-directories.
 
 ## P2 — Nice-to-Have
 
+- [ ] **[P2]** **Two eval prompts name `refresh-skills`, which no longer exists.**
+  `skill-improvement/evals/evals.json` ("Review my SKILL.md in
+  active-skills/refresh-skills…") and `skill-portfolio-review/evals/evals.json`
+  ("Consolidate git-sync and refresh-skills…") were written against a skill removed
+  2026-08-06, so both cases now point at a directory that isn't there and cannot be
+  run as written. Repoint them at a skill that still exists — `git-sync` is the
+  natural substitute in both, since it was the other half of the consolidation the
+  second prompt describes.
+
+
+
 - [ ] **[P2]** **`skill-creator-enhanced` does not fire on rewording an existing
   skill description.** Its description advertises "optimize a skill's description
   for better triggering accuracy", but "my pdf-extract skill isn't firing on
