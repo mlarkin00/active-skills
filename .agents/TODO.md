@@ -15,8 +15,6 @@ match dot-directories.
   natural substitute in both, since it was the other half of the consolidation the
   second prompt describes.
 
-
-
 - [ ] **[P2]** **`skill-creator-enhanced` does not fire on rewording an existing
   skill description.** Its description advertises "optimize a skill's description
   for better triggering accuracy", but "my pdf-extract skill isn't firing on
@@ -52,14 +50,18 @@ match dot-directories.
   selects on aggregate positive trigger rate, and refuses to start underpowered.
   Design: `docs/designs/2026-08-06-trigger-eval-redesign.md`.
   ```bash
-  claude plugin disable active-skills        # else probe runs are contaminated
   cd skill-creator-enhanced && python -m scripts.run_loop \
     --eval-set ../prompt-design/evals/trigger_optimization/eval_set.json \
     --skill-path ../prompt-design --runs-per-query 20 --min-effect 0.10 \
-    --results-dir ../prompt-design/evals/trigger_optimization/runs
+    --results-dir ../prompt-design/evals/trigger_optimization/runs --verbose
   ```
-  Preflight quotes the budget before spending: ~200 sessions per iteration, up to 5
-  iterations. **Re-enable the plugin afterwards.** The three stored result files
-  predate the two added negatives and cannot be compared against a new run without
-  re-baselining. The over-triggering half is already settled: every near-miss held
-  at 0.00 across all three runs, so no further work is needed there.
+  Do **not** run `claude plugin disable active-skills` first. Probe isolation is
+  automatic per-invocation via `--settings`; disabling the plugin globally would
+  also remove `new-prompt` and `optimizing-prompts-w-vertex`, which are exactly the
+  competitors the near-miss queries exist to test against. Preflight quotes the
+  budget and waits for confirmation: ~200 sessions per iteration, up to 5. If a run
+  is aborted, sweep leftovers with `python -m scripts.run_eval --cleanup`. The three
+  stored result files predate the two added negatives and cannot be compared against
+  a new run without re-baselining. The over-triggering half is already settled:
+  every near-miss held at 0.00 across all three runs, so no further work is needed
+  there.
