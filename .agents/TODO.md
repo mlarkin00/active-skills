@@ -4,28 +4,6 @@ Backlog for the skills themselves. Not synced to the plugin — the mirror only
 takes top-level directories containing a `SKILL.md`, and the `*/` glob does not
 match dot-directories.
 
-## P0 — Address Immediately
-
-- [ ] **[P0]** **Push the 2026-08-06 trigger-eval rewrite — committed on `main`,
-  deliberately NOT pushed.** Held because the commit carries breaking interface
-  changes and pushing propagates them to users via the `rsync --delete` mirror:
-  - `generate_report.generate_html()` **removed**, replaced by `generate_markdown()`
-  - `improve_description()` signature changed — `client` was the first positional
-    argument and is gone; positional callers break
-  - `run_loop.py` defaults changed: `--runs-per-query` 3 → 20 (**7x the cost of an
-    unchanged command**), `--holdout` 0.4 → 0.0, `--timeout` 30 → 120
-  - eval-set schema: `expectations` → `assertions`, and two skills' `evals.json`
-    restructured from `{"cases":[…]}` / a bare list into `{skill_name, evals}`
-  - `.agents/tools/trigger_eval.py` deleted (dev-only, folded into `run_eval.py`)
-
-  Release when Phase 5 lands — `skill-creator-enhanced/SKILL.md` still promises an
-  HTML report in the browser, still says "run each query 3 times to get a reliable
-  trigger rate" (the sentence that caused the original error), and still points at
-  `improve_description.py`, now a shim. `references/schemas.md` has no entry for
-  the eval-results shape either. Shipping the code without those docs means users
-  read instructions that contradict the tool. Design and phase status:
-  `docs/designs/2026-08-06-trigger-eval-redesign.md`.
-
 ## P2 — Nice-to-Have
 
 - [ ] **[P2]** **Two eval prompts name `refresh-skills`, which no longer exists.**

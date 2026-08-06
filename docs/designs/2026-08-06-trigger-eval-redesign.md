@@ -1,6 +1,6 @@
 # Design: Trigger-eval loop for `skill-creator-enhanced`
 
-**Status:** Phases 1–4 implemented and verified · Phase 5 (docs) outstanding
+**Status:** Implemented and verified — all phases complete
 **Author:** Claude (with Matt Larkin)
 **Date:** 2026-08-06
 
