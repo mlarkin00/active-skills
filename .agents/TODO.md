@@ -4,22 +4,6 @@ Backlog for the skills themselves. Not synced to the plugin — the mirror only
 takes top-level directories containing a `SKILL.md`, and the `*/` glob does not
 match dot-directories.
 
-## P0 — Address Immediately
-
-- [ ] **[P0]** **Push the 2026-08-06 skill removals — held on
-  `feat/remove-agent-workflow-skills`, not merged to `main`.** Twenty skills were
-  removed (`using-agent-workflow` and the workflow-methodology set it indexed:
-  `writing-plans`, `executing-plans`, `subagent-driven-development`,
-  `test-driven-development`, `systematic-debugging`, `verification-before-completion`,
-  `requesting-code-review`, `receiving-code-review`, `finishing-a-development-branch`,
-  `using-git-worktrees`, `dispatching-parallel-agents`, `brainstorming`, `grill-me`,
-  `handoff`, `explanatory-mode`, `skill-portfolio-review`, `optimizing-prompts-w-vertex`,
-  `gemini-interactions-api`, `google-cloud-recipe-auth`). The sync is `rsync --delete`,
-  so pushing removes all twenty from every installed user with no deprecation window,
-  and `/writing-plans`, `/systematic-debugging`, and the rest start returning nothing.
-  The shipping set drops from 34 skills to 14. Push when that is intended — or say
-  "push anyway".
-
 ## P2 — Nice-to-Have
 
 - [ ] **[P2]** **`project-setup`'s evals test behaviour the skill has never had.**
