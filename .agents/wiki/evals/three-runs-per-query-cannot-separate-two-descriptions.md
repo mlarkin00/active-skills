@@ -71,10 +71,14 @@ description that newly claims overlapping territory can make the model fire
 not a sibling), versus plain temporal drift. Distinguishing them needs conditions
 interleaved within one time window, not run back to back.
 
-The negative half replicated perfectly: **0.00 over-triggering in every
-near-miss cell measured** — 35 of the 42 skill×query negative cells (all 21 in
-run 1; design and implement in run 2, with `agent-eval-run`'s run-2 negatives
-still executing when this was written) — with correct routing to
+A third data point sharpens the warning. `agent-eval-run` scored **0.51 then
+0.86** across a rewrite — an apparent +0.35 that any reader would call a win.
+It is the same size as the 0.34 drift measured above on text that did not
+change at all. At this sample size the two are indistinguishable, so the
+"improvement" is unclaimable.
+
+The negative half replicated perfectly: **0.00 over-triggering in all 42
+skill×query negative cells** — 21 per run, both runs — with correct routing to
 `skill-creator-enhanced`, `cloud-build-triggers`, and `optimizing-prompts-w-vertex`.
 That half of the guidance below is confirmed, not merely predicted.
 

@@ -8,17 +8,21 @@ match dot-directories.
 
 - [ ] **[P2]** **`agent-eval-implement` and `agent-eval-run` autonomously trigger
   on only ~half their positives.** Measured 2026-08-06, live mode, 5 runs/query,
-  zero contamination: `agent-eval-design` 1.00/0.66, `agent-eval-implement`
-  0.49/0.51, `agent-eval-run` 0.51 positive trigger rate. Deprioritised from P1
-  because Matt confirmed these skills are normally invoked **explicitly** (by the
-  user or via a sibling's cross-pointer), so autonomous trigger rate is not the
-  binding constraint. Two things are settled and need no rework: **every
-  near-miss query measured held at 0.00** (35 of 42 skill×query negative cells —
-  all 21 in run 1, plus design and implement in run 2; `agent-eval-run`'s run-2
-  negatives were still executing at session close and are the only unmeasured
-  cell) — no over-triggering, and sibling/competitor routing is correct — and a
-  description rewrite aimed at the gap moved composition without moving the
-  aggregate. Do not re-attempt tuning at
+  zero contamination, two runs each: `agent-eval-design` 1.00/0.66,
+  `agent-eval-implement` 0.49/0.51, `agent-eval-run` 0.51/0.86 positive trigger
+  rate. Deprioritised from P1 because Matt confirmed these skills are normally
+  invoked **explicitly** (by the user or via a sibling's cross-pointer), so
+  autonomous trigger rate is not the binding constraint. Settled and needing no
+  rework: **0.00 over-triggering in all 42 skill×query negative cells**, with
+  sibling and competitor routing correct.
+
+  Caveat on the positive numbers — **the shipped text was never measured.** Both
+  `agent-eval-implement` and `agent-eval-run` had a "Make sure to use this
+  skill…" push clause trimmed *after* run 2 was already executing, so every
+  positive rate above belongs to a pushier variant than what is in git. The
+  negative half still holds a fortiori: the shipped text is strictly less
+  pushy, and removing push language cannot increase over-triggering. Re-measure
+  the shipped text before drawing any conclusion about positives. Do not re-attempt tuning at
   n≤5; per `.agents/wiki/evals/three-runs-per-query-cannot-separate-two-descriptions.md`
   an unchanged description drifted 0.34 in this very run, so any retry needs
   interleaved conditions and ~10+ runs/query (~200+ sessions per candidate).
