@@ -71,6 +71,6 @@ Open the concept before re-deriving anything it covers.
 ### Subdirectories
 
 * [evals](.agents/wiki/evals/index.md) - Contains 7 entries: claude -p --output-format json returns an array of messages, not a result object, Killing an eval runner leaves its nested claude -p sessions running and billing, Parallel trigger probes sharing one project root steal each other's command files, A trigger probe scores every positive as a miss for a skill that is also installed, An SDK-based propose step cannot run on an OAuth-authenticated machine, Passing enabledPlugins via --settings hides a plugin from one claude -p run, Trigger evals at 3 runs per query cannot separate two skill descriptions.
-* [publishing](.agents/wiki/publishing/index.md) - Contains 2 entries: Removing a skill leaves two kinds of reference, and only one of them may be edited, Deep-research source docs name internal services in prose that no path scan catches.
+* [publishing](.agents/wiki/publishing/index.md) - Contains 3 entries: Editing a skill in this repo does not change what its slash command runs, Removing a skill leaves two kinds of reference, and only one of them may be edited, Deep-research source docs name internal services in prose that no path scan catches.
 
 <!-- llm-wiki:discovery .agents/wiki END -->
