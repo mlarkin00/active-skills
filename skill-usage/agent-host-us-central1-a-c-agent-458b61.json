@@ -12,8 +12,8 @@
     "last_used_at": "2026-08-06T22:46:14Z"
   },
   "brainstorming": {
-    "count": 7,
-    "last_used_at": "2026-08-12T20:53:06Z"
+    "count": 8,
+    "last_used_at": "2026-08-12T22:24:32Z"
   },
   "claude-api": {
     "count": 1,
@@ -44,8 +44,8 @@
     "last_used_at": "2026-07-21T21:58:49Z"
   },
   "managing-agent-instructions": {
-    "count": 31,
-    "last_used_at": "2026-08-12T21:20:06Z"
+    "count": 32,
+    "last_used_at": "2026-08-13T01:30:29Z"
   },
   "memories-add": {
     "count": 1,
@@ -80,8 +80,8 @@
     "last_used_at": "2026-07-22T20:49:44Z"
   },
   "subagent-driven-development": {
-    "count": 1,
-    "last_used_at": "2026-08-12T19:22:38Z"
+    "count": 2,
+    "last_used_at": "2026-08-12T22:50:41Z"
   },
   "systematic-debugging": {
     "count": 2,
@@ -100,7 +100,7 @@
     "last_used_at": "2026-07-22T21:05:44Z"
   },
   "writing-plans": {
-    "count": 2,
-    "last_used_at": "2026-08-12T19:11:06Z"
+    "count": 3,
+    "last_used_at": "2026-08-12T22:38:30Z"
   }
 }
