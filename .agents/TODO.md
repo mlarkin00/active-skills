@@ -4,6 +4,21 @@ Backlog for the skills themselves. Not synced to the plugin — the mirror only
 takes top-level directories containing a `SKILL.md`, and the `*/` glob does not
 match dot-directories.
 
+## P1 — Important / Unblocking
+
+- [ ] **[P1]** **`managing-agent-instructions` tells agents to type
+  `/llm-wiki:stats`, which no longer exists.** The `llm-wiki` plugin consolidated
+  18 skills into 9 on 2026-08-13 and retired the `stats` skill; the command is now
+  `/llm-wiki:lint --quick` (same `okf_stats.py` output — mechanical findings only,
+  no semantic audit). Two lines to repoint:
+  `managing-agent-instructions/SKILL.md` (~L304) and
+  `managing-agent-instructions/references/knowledge-bundle.md` (~L186). Both sit
+  in maintenance-command blocks alongside `/llm-wiki:validate`, `:index`, `:init`
+  and `:lint`, which all still resolve — only `:stats` broke. This is the
+  authoring repo for those files: the copy under `mlarkin00/plugins`
+  (`active-skills/skills/`) is the rsync mirror and is overwritten on every sync,
+  so the fix has to land here and sync across.
+
 ## P2 — Nice-to-Have
 
 - [ ] **[P2]** **`agent-eval-implement` and `agent-eval-run` autonomously trigger
