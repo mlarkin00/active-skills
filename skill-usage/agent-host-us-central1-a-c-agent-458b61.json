@@ -12,8 +12,8 @@
     "last_used_at": "2026-08-06T22:46:14Z"
   },
   "brainstorming": {
-    "count": 8,
-    "last_used_at": "2026-08-12T22:24:32Z"
+    "count": 9,
+    "last_used_at": "2026-08-13T20:39:46Z"
   },
   "claude-api": {
     "count": 1,
@@ -44,8 +44,8 @@
     "last_used_at": "2026-07-21T21:58:49Z"
   },
   "managing-agent-instructions": {
-    "count": 33,
-    "last_used_at": "2026-08-13T17:28:43Z"
+    "count": 34,
+    "last_used_at": "2026-08-13T21:27:50Z"
   },
   "memories-add": {
     "count": 1,
@@ -88,8 +88,8 @@
     "last_used_at": "2026-08-13T17:19:24Z"
   },
   "test-driven-development": {
-    "count": 3,
-    "last_used_at": "2026-08-13T17:24:37Z"
+    "count": 4,
+    "last_used_at": "2026-08-13T21:17:48Z"
   },
   "using-git-worktrees": {
     "count": 2,
