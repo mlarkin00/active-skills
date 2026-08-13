@@ -44,8 +44,8 @@
     "last_used_at": "2026-07-21T21:58:49Z"
   },
   "managing-agent-instructions": {
-    "count": 32,
-    "last_used_at": "2026-08-13T01:30:29Z"
+    "count": 33,
+    "last_used_at": "2026-08-13T17:28:43Z"
   },
   "memories-add": {
     "count": 1,
@@ -84,12 +84,12 @@
     "last_used_at": "2026-08-12T22:50:41Z"
   },
   "systematic-debugging": {
-    "count": 2,
-    "last_used_at": "2026-08-06T22:11:35Z"
+    "count": 3,
+    "last_used_at": "2026-08-13T17:19:24Z"
   },
   "test-driven-development": {
-    "count": 2,
-    "last_used_at": "2026-08-12T20:14:59Z"
+    "count": 3,
+    "last_used_at": "2026-08-13T17:24:37Z"
   },
   "using-git-worktrees": {
     "count": 2,
